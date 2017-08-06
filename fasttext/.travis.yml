@@ -1,0 +1,17 @@
+language: python
+python:
+- '2.6'
+- '2.7'
+- '3.2'
+- '3.3'
+- '3.4'
+- '3.5'
+install: make install
+script: make test
+branches:
+  only:
+  - master
+  - /^v\d{,2}\.\d{,3}\.\d{,3}$/
+notifications:
+  slack:
+    secure: pStiYmzBbnb0W18r1i1Lz8FIakVHajsv3on1vWy8fNWVuPfaJ85ZqJhnmrr2HKlanZcl6bEMnllDctzt/F+u4HfeXHmhS7a9nZbRDDGyWIxsvJA/UqPt2byLEB1u+KbLb53eDu7MTIe63tzk1zq+4BTupI+btc4igiUuzAhqh4+LP9eZe2L58aC+jOzIn/9Kno7+xawhj2DKs6m3O/hcXFORcOpdtWRFpoDa66dN7xPVbN0hYD80uVApEpghnHToiJN0HhhB92YmZHa1ByWj7u9VN1Eaex1srGQOJQG3FaDBJY1r2e9c7Sj+33gkZb1AqjeOpxhRsxxVUdigDvCoxIrr6ll0/p3n6pUfRGQ7SB1A7NoRBC+g6aTJbOLr5NjQDBmZHaFXx/QFd1h0EUfgBybDI3v4cKOtV8vIFoT1xdkGs/Hjo4v9z4KO6R135uDBwaJAo9cWx360xV1UK1cb4kfzdbJFk4mNmMEbdwJHT27a7e3uWr1lu6CrMUzVk0EXj1BroKC7jcRK7qthr9DcfW2mmGG3JTIKQ6+nYSEF0KC/JjjbIsg/2hKtq7mACzrHrluN6HbqCF6Kd2n2rfItsqIaCo6LEmgZ2fo69R34i96QzyHpplBivWOgC+pwLOe0FiseuleSCZ/kQgJPf62gsqCan6+GkazoEp9Ow+lPMkA=
