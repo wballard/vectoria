@@ -6,25 +6,26 @@ import unittest
 
 # Define the C++ extension
 if platform == "darwin":
-    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++11', '-stdlib=libc++', '-mmacosx-version-min=10.7']
+    extra_compile_args = ['-pthread', '-std=c++11', '-static', '-mmacosx-version-min=10.7']
 else:
-    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++11']
+    extra_compile_args = ['-pthread', '-std=c++11', '-static']
 
 extensions = [
-    Extension('vecoder.fasttext',
-        sources=[
-            'vecoder/fasttext.pyx',
-            'vecoder/fasttext/args.cc',
-            'vecoder/fasttext/dictionary.cc',
-            'vecoder/fasttext/matrix.cc',
-            'vecoder/fasttext/model.cc',
-            'vecoder/fasttext/utils.cc',
-            'vecoder/fasttext/fasttext.cc',
-            'vecoder/fasttext/vector.cc',
-            'vecoder/fasttext/main.cc'
-        ],
-        language='c++',
-        extra_compile_args=extra_compile_args)
+    Extension('*',
+              sources=[
+                  'vecoder/fasttext.pyx',
+                  'vecoder/fasttext/args.cc',
+                  'vecoder/fasttext/dictionary.cc',
+                  'vecoder/fasttext/fasttext.cc',
+                  'vecoder/fasttext/matrix.cc',
+                  'vecoder/fasttext/model.cc',
+                  'vecoder/fasttext/productquantizer.cc',
+                  'vecoder/fasttext/qmatrix.cc',
+                  'vecoder/fasttext/utils.cc',
+                  'vecoder/fasttext/vector.cc',
+              ],
+              language='c++',
+              extra_compile_args=extra_compile_args)
 ]
 
 # Package details
@@ -38,12 +39,12 @@ setup(
     long_description=open('README.rst', 'r').read(),
     license='BSD 3-Clause License',
     packages=['vecoder'],
-    ext_modules = cythonize(extensions),
+    ext_modules=cythonize(extensions),
     install_requires=[
         'numpy>=1',
         'future'
     ],
-    classifiers= [
+    classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',

@@ -4,6 +4,7 @@ from builtins import bytes
 cdef extern from "./fasttext/fasttext.h" namespace "fasttext":
     cdef cppclass FastText:
         void loadModel(const string&)
+        int getDimension() const
 
 cdef class FastTextWrapper:
     cdef FastText *fm
@@ -14,8 +15,13 @@ cdef class FastTextWrapper:
     def __dealloc(self):
         del self.fm
 
+    def __getitem__(self, word):
+        dims = self.fm.getDimension()
+        return dims
+    
+
 def loadFastText(filename, encoding='utf-8'):
     filename_bytes = bytes(filename, encoding)
     ft = FastTextWrapper()
-    ft.loadModel(filename_bytes)
+    ft.fm.loadModel(filename_bytes)
     return ft

@@ -2,7 +2,11 @@
 all: install test
 
 test: install-dev
-	python -c "import vecoder; v = vecoder.loadFastText('var/data/test.bin')"
+	python -c "import vecoder; v = vecoder.loadFastText('test/test.bin'); print(v['import'])"
+
+clean:
+	rm -rf build
+.PHONY: clean
 
 buildext:
 	python setup.py build_ext --inplace
