@@ -1,7 +1,7 @@
 from libcpp.string cimport string
 from builtins import bytes
 
-cdef extern from "../fasttext/fasttext/cpp/src/fasttext.h" namespace "fasttext":
+cdef extern from "./fasttext/fasttext.h" namespace "fasttext":
     cdef cppclass FastText:
         void loadModel(const string&)
 

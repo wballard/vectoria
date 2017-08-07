@@ -6,22 +6,22 @@ import unittest
 
 # Define the C++ extension
 if platform == "darwin":
-    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++0x', '-stdlib=libc++', '-mmacosx-version-min=10.7']
+    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++11', '-stdlib=libc++', '-mmacosx-version-min=10.7']
 else:
-    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++0x']
+    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++11']
 
 extensions = [
-    Extension('*',
+    Extension('vecoder.fasttext',
         sources=[
             'vecoder/fasttext.pyx',
-            'fasttext/fasttext/cpp/src/args.cc',
-            'fasttext/fasttext/cpp/src/dictionary.cc',
-            'fasttext/fasttext/cpp/src/matrix.cc',
-            'fasttext/fasttext/cpp/src/model.cc',
-            'fasttext/fasttext/cpp/src/utils.cc',
-            'fasttext/fasttext/cpp/src/fasttext.cc',
-            'fasttext/fasttext/cpp/src/vector.cc',
-            'fasttext/fasttext/cpp/src/main.cc'
+            'vecoder/fasttext/args.cc',
+            'vecoder/fasttext/dictionary.cc',
+            'vecoder/fasttext/matrix.cc',
+            'vecoder/fasttext/model.cc',
+            'vecoder/fasttext/utils.cc',
+            'vecoder/fasttext/fasttext.cc',
+            'vecoder/fasttext/vector.cc',
+            'vecoder/fasttext/main.cc'
         ],
         language='c++',
         extra_compile_args=extra_compile_args)

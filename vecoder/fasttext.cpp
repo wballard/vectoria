@@ -4,13 +4,14 @@
 {
     "distutils": {
         "depends": [
-            "fasttext/fasttext/cpp/src/fasttext.h"
+            "vecoder/fasttext/fasttext.h"
         ],
         "extra_compile_args": [
             "-O3",
             "-pthread",
             "-funroll-loops",
-            "-std=c++0x"
+            "-std=c++11",
+            "-stdlib=libc++"
         ],
         "language": "c++"
     },
@@ -467,7 +468,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include "new"
 #include "stdexcept"
 #include "typeinfo"
-#include "../fasttext/fasttext/cpp/src/fasttext.h"
+#include "./fasttext/fasttext.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -1556,7 +1557,7 @@ PyMODINIT_FUNC PyInit_fasttext(void)
  * from libcpp.string cimport string
  * from builtins import bytes             # <<<<<<<<<<<<<<
  * 
- * cdef extern from "../fasttext/fasttext/cpp/src/fasttext.h" namespace "fasttext":
+ * cdef extern from "./fasttext/fasttext.h" namespace "fasttext":
  */
   __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
