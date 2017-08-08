@@ -58,7 +58,7 @@ cdef class FastTextModelWrapper:
         return numpy_wrap_vector(vec)
     
 
-def loadFastTextModel(filename, encoding='utf-8'):
+def load_model(filename, encoding='utf-8'):
     filename_bytes = bytes(filename, encoding)
     ft = FastTextModelWrapper()
     ft.fm.loadModel(filename_bytes)

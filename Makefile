@@ -2,7 +2,7 @@
 all: install test
 
 test: install-dev
-	python -c "import vecoder; v = vecoder.loadFastTextModel('test/test.bin'); print(v['import'])"
+	python examples/fasttext_words.py
 
 clean:
 	rm -rf build
@@ -30,7 +30,7 @@ upload-to-pypitest: README.rst
 .PHONY: upload-to-pypitest
 
 install-from-pypitest::
-	pip install -U --no-cache-dir -i https://testpypi.python.org/pypi vecoder
+	pip install -U --no-cache-dir -i https://testpypi.python.org/pypi vectoria
 .PHONY: install-from-pypitest
 
 install-dev: README.rst

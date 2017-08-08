@@ -20,16 +20,16 @@ else:
 EXTENSIONS = [
     Extension('*',
               sources=[
-                  'vecoder/fasttext.pyx',
-                  'vecoder/fasttext/args.cc',
-                  'vecoder/fasttext/dictionary.cc',
-                  'vecoder/fasttext/fasttext.cc',
-                  'vecoder/fasttext/matrix.cc',
-                  'vecoder/fasttext/model.cc',
-                  'vecoder/fasttext/productquantizer.cc',
-                  'vecoder/fasttext/qmatrix.cc',
-                  'vecoder/fasttext/utils.cc',
-                  'vecoder/fasttext/vector.cc',
+                  'vectoria/fasttext.pyx',
+                  'vectoria/fasttext/args.cc',
+                  'vectoria/fasttext/dictionary.cc',
+                  'vectoria/fasttext/fasttext.cc',
+                  'vectoria/fasttext/matrix.cc',
+                  'vectoria/fasttext/model.cc',
+                  'vectoria/fasttext/productquantizer.cc',
+                  'vectoria/fasttext/qmatrix.cc',
+                  'vectoria/fasttext/utils.cc',
+                  'vectoria/fasttext/vector.cc',
               ],
               language='c++',
               extra_compile_args=EXTRA_COMPILE_ARGS)
@@ -37,15 +37,15 @@ EXTENSIONS = [
 
 # Package details
 setup(
-    name='vecoder',
+    name='vectoria',
     version='0.0.1',
     author='Will Ballard',
     author_email='wballard@mailframe.net',
-    url='https://github.com/wballard/vecoder',
+    url='https://github.com/wballard/vectoria',
     description='Word Vector Encoder',
     long_description=open('README.rst', 'r').read(),
     license='BSD 3-Clause License',
-    packages=['vecoder'],
+    packages=['vectoria'],
     ext_modules=cythonize(EXTENSIONS),
     include_dirs=['.', np.get_include()],
     install_requires=[
