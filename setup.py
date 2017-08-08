@@ -1,16 +1,23 @@
-from setuptools import setup, find_packages
-from setuptools.extension import Extension
-from Cython.Build import cythonize
+"""
+Setup for Vectoria. This uses cython, so will compile the C++ code of
+FastText into a python extension.
+"""
+
 from sys import platform
-import unittest
+
+import numpy as np
+from Cython.Build import cythonize
+
+from setuptools import setup
+from setuptools.extension import Extension
 
 # Define the C++ extension
 if platform == "darwin":
-    extra_compile_args = ['-pthread', '-std=c++11', '-static', '-mmacosx-version-min=10.7']
+    EXTRA_COMPILE_ARGS = ['-O3', '-pthread', '-std=c++11', '-static', '-mmacosx-version-min=10.7']
 else:
-    extra_compile_args = ['-pthread', '-std=c++11', '-static']
+    EXTRA_COMPILE_ARGS = ['-O3', '-pthread', '-std=c++11', '-static']
 
-extensions = [
+EXTENSIONS = [
     Extension('*',
               sources=[
                   'vecoder/fasttext.pyx',
@@ -25,7 +32,7 @@ extensions = [
                   'vecoder/fasttext/vector.cc',
               ],
               language='c++',
-              extra_compile_args=extra_compile_args)
+              extra_compile_args=EXTRA_COMPILE_ARGS)
 ]
 
 # Package details
@@ -39,7 +46,8 @@ setup(
     long_description=open('README.rst', 'r').read(),
     license='BSD 3-Clause License',
     packages=['vecoder'],
-    ext_modules=cythonize(extensions),
+    ext_modules=cythonize(EXTENSIONS),
+    include_dirs=['.', np.get_include()],
     install_requires=[
         'numpy>=1',
         'future'

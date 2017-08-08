@@ -2,7 +2,7 @@
 all: install test
 
 test: install-dev
-	python -c "import vecoder; v = vecoder.loadFastText('test/test.bin'); print(v['import'])"
+	python -c "import vecoder; v = vecoder.loadFastTextModel('test/test.bin'); print(v['import'])"
 
 clean:
 	rm -rf build
