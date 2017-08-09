@@ -12,6 +12,7 @@ from zipfile import ZipFile
 
 
 URL_TEMPLATE = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{0}.zip"
+URL_EN = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki-news-300d-1M-subword.vec.zip"
 
 
 def where_to_store(language: str) -> Path:
@@ -37,8 +38,12 @@ def download_a_language(language: str):
     """
     Download, store, unzip, and place a specific language model.
     """
-    url = URL_TEMPLATE.format(language)
+    if language == 'en':
+        url = URL_EN
+    else:
+        url = URL_TEMPLATE.format(language)
     # Streaming, so we can iterate over the response.
+    print(url)
     r = requests.get(url, stream=True)
     # Total size in bytes.
     total_size = int(r.headers.get('content-length', 0))
@@ -52,8 +57,8 @@ def download_a_language(language: str):
         progress = tqdm(total=total_size, unit='B', unit_scale=True)
         for data in r.iter_content(chunk):
             if data:
-              f.write(data)
-              progress.update(len(data))
+                f.write(data)
+                progress.update(len(data))
     with ZipFile(str(zipfilepath)) as z:
         z.extractall(str(language_folder))
 
@@ -62,8 +67,13 @@ def load_fasttext_model(language: str) -> FastTextModelWrapper:
     """
     If we have it, use it -- otherwise download, unpack and use it.
     """
+    language = language.lower()
     language_folder = where_to_store(language)
-    language_file = language_folder / Path('wiki.{0}.bin'.format(language))
+    if language is 'en':
+        language_file = language_folder / Path('wiki.{0}.bin'.format(language))
+    else:
+        language_file = language_folder / Path('wiki-news-300d-1M-subword.vec')
+    print(language_file)
     if not language_file.exists():
         download_a_language(language)
     return load_model(str(language_file))
