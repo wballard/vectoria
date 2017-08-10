@@ -122,7 +122,6 @@ class FastTextLanguageModel:
         """
         min_n, max_n = self.ngram_range
         w_len = len(word)
-        vector = None
         ngrams = []
         for n in range(min_n, max_n + 1):
             offset = 0
@@ -135,12 +134,8 @@ class FastTextLanguageModel:
             if offset == 0:   # count a short word (w_len < n) only once
                 break
         #accumulate and normalize
-        word_vector = None
+        word_vector = np.zeros(self.dimensions)
         for ngram in ngrams:
             ngram_vector = self.decode(ngram)
-            if ngram_vector is not None:
-                if word_vector is not None:
-                    word_vector = word_vector + ngram_vector
-                else:
-                    word_vector = ngram_vector
+            word_vector = word_vector + ngram_vector
         return word_vector / len(ngrams)
