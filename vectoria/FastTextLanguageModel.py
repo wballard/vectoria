@@ -3,8 +3,6 @@ Download and store FastText pretrained models as files
 up under this python package.
 """
 import importlib
-import os
-import sys
 from pathlib import Path
 
 import lmdb
@@ -19,6 +17,11 @@ class FastTextLanguageModel:
     """
     Language model that will return word embedding vectors for word strings, with
     a unique sub-word model of ngrams allowing encoding of out of vocabulary words.
+
+    Attributes
+    ----------
+    dimensions: int
+        number of dimensions for each word vector
     """
 
     def __init__(self, language: str):
@@ -81,6 +84,10 @@ class FastTextLanguageModel:
         else:
             env = lmdb.open(str(database_path))
         self.txn = env.begin()
+        with self.txn.cursor() as c:
+            for key, buffer in c:
+                self.dimensions = np.frombuffer(buffer).shape[0]
+                break
 
     def decode(self, word: str) -> np.array:
         """
@@ -98,7 +105,7 @@ class FastTextLanguageModel:
         if buffer:
             return np.frombuffer(buffer)
         else:
-            return None
+            return np.zeros(self.dimensions)
 
     def __getitem__(self, word: str) -> np.array:
         """
