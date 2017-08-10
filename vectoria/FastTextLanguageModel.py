@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 URL_TEMPLATE = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{0}.vec"
 
+
 class FastTextLanguageModel:
     """
     Language model that will return word embedding vectors for word strings, with
@@ -34,14 +35,14 @@ class FastTextLanguageModel:
 
         self.ngram_range = (3, 6)
 
-        #the local in package file path for the language model
+        # the local in package file path for the language model
         pkg = importlib.import_module('vectoria')
         vectoria_path = Path(pkg.__file__).parent
         folder_path = vectoria_path / Path(language)
         if not folder_path.exists():
             folder_path.mkdir()
         vectors_path = folder_path / Path('{0}.vec'.format(language))
-        #download if needed
+        # download if needed
         if not vectors_path.exists():
             url = URL_TEMPLATE.format(language)
             print(url)
@@ -56,22 +57,24 @@ class FastTextLanguageModel:
                     if data:
                         f.write(data)
                         progress.update(len(data))
-        #vectors are local by this point -- time for the database
+        # vectors are local by this point -- time for the database
         database_path = folder_path / Path('lmdb')
         if not database_path.exists():
-            env = lmdb.open(str(database_path), map_size=12*1024*1024*1024, writemap=True)
+            env = lmdb.open(str(database_path), map_size=12 *
+                            1024 * 1024 * 1024, writemap=True)
             with env.begin(write=True) as txn:
-                #now loop the whole vector file -- and encode as dense floats stored by word
+                # now loop the whole vector file -- and encode as dense floats stored by word
                 with open(str(vectors_path), 'r') as f:
                     first_line = f.readline()
                     words, dimensions = map(int, first_line.split())
                 for line in tqdm(iterable=open(str(vectors_path)), total=words):
-                    #first line processing, make sure we have enough segments
+                    # first line processing, make sure we have enough segments
                     segments = line.split()
                     if len(segments) > dimensions:
                         try:
                             word = segments[0]
-                            numbers = np.array(list(map(np.float32, segments[1:])))
+                            numbers = np.array(
+                                list(map(np.float32, segments[1:])))
                             txn.put(word.encode('utf8'), numbers.tobytes())
                         except ValueError:
                             pass
@@ -96,7 +99,6 @@ class FastTextLanguageModel:
             return np.frombuffer(buffer)
         else:
             return None
-
 
     def __getitem__(self, word: str) -> np.array:
         """
@@ -135,4 +137,3 @@ class FastTextLanguageModel:
                 else:
                     word_vector = ngram_vector
         return word_vector / len(ngrams)
-
