@@ -72,5 +72,8 @@ class FastTextVectorizer(BaseEstimator, TransformerMixin):
                            self.dimensions), dtype=np.float32)
         for i, string in enumerate(strings):
             for j, word in enumerate(html.unescape(string)):
-                buffer[i, j] = self.language[word]
+                if j >= self.maxlen:
+                    break
+                else:
+                    buffer[i, j] = self.language[word]
         return buffer
