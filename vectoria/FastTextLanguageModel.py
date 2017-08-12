@@ -86,7 +86,7 @@ class FastTextLanguageModel:
         self.txn = env.begin()
         with self.txn.cursor() as c:
             for key, buffer in c:
-                self.dimensions = np.frombuffer(buffer).shape[0]
+                self.dimensions = self.decode(key).shape[0]
                 break
 
     def decode(self, word: str) -> np.array:
@@ -101,9 +101,13 @@ class FastTextLanguageModel:
         -------
         A numpy array representing the word. 
         """
-        buffer = self.txn.get(word.encode('utf8'))
+        if isinstance(word, str):
+            key = word.encode('utf8')
+        else:
+            key = word
+        buffer = self.txn.get(key)
         if buffer:
-            return np.frombuffer(buffer)
+            return np.frombuffer(buffer, dtype=np.float32)
         else:
             return np.zeros(self.dimensions)
 
