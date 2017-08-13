@@ -13,3 +13,5 @@ print(en['ell'])
 print(en['llo'])
 #and the power of the subword ngram model for 'words' not in vocabulary, 
 print(en['hello_world'])
+#and something totally out of vocabulary
+print(en['!!!'])

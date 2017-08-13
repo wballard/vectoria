@@ -9,6 +9,7 @@ import lmdb
 import numpy as np
 import requests
 from tqdm import tqdm
+import numpy.linalg as la
 
 URL_TEMPLATE = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{0}.vec"
 
@@ -109,7 +110,7 @@ class FastTextLanguageModel:
         if buffer:
             return np.frombuffer(buffer, dtype=np.float32)
         else:
-            return np.zeros(self.dimensions)
+            return np.zeros(self.dimensions, dtype=np.float32)
 
     def __getitem__(self, word: str) -> np.array:
         """
@@ -138,8 +139,10 @@ class FastTextLanguageModel:
             if offset == 0:   # count a short word (w_len < n) only once
                 break
         #accumulate and normalize
-        word_vector = np.zeros(self.dimensions)
+        word_vector = np.zeros(self.dimensions, dtype=np.float32)
         for ngram in ngrams:
             ngram_vector = self.decode(ngram)
             word_vector = word_vector + ngram_vector
-        return word_vector / len(ngrams)
+
+        ret = word_vector / (la.norm(word_vector) + np.finfo(np.float32).eps)
+        return ret
