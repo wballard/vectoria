@@ -36,3 +36,9 @@ install-from-pypitest::
 install-dev: README.rst
 	python setup.py develop
 .PHONY: install-dev
+
+
+profile: install-dev
+	time kernprof -l examples/sklearn_profile.py
+	python -m line_profiler sklearn_profile.py.lprof 
+.PHONY: profile

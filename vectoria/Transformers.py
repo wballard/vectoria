@@ -47,6 +47,7 @@ class FastTextVectorizer(BaseEstimator, TransformerMixin):
         """
         pass
 
+    @profile
     def transform(self, strings):
         """
         Transform an iterable source of strings into a dense embedding
