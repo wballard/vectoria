@@ -36,6 +36,7 @@ setup(
     license='BSD 3-Clause License',
     packages=['vectoria'],
     ext_modules = cythonize(extensions),
+    include_dirs=['.', np.get_include()],
     install_requires=[
         'numpy>=1',
         'future'

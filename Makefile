@@ -39,6 +39,6 @@ install-dev: README.rst
 
 
 profile: install-dev
-	time kernprof -l examples/sklearn_profile.py
+	kernprof -l examples/sklearn_profile.py
 	python -m line_profiler sklearn_profile.py.lprof 
 .PHONY: profile
