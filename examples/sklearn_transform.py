@@ -12,4 +12,4 @@ sentences = [
 ]
 
 #not that there is no need to 'fit', this is pretrained model
-print(transformer.transform(sentences))
+print(transformer.transform(sentences)[0][0])
