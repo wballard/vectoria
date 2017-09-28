@@ -32,7 +32,7 @@ setup(
     author_email='wballard@mailframe.net',
     url='https://github.com/wballard/vectoria',
     description='Word Vector Encoder',
-    long_description=open('README.rst', 'r').read(),
+    long_description=open('README.md', 'r').read(),
     license='BSD 3-Clause License',
     packages=['vectoria'],
     ext_modules = cythonize(extensions),
