@@ -41,7 +41,7 @@ class FastTextVectorizer(BaseEstimator, TransformerMixin):
         self.maxlen = maxlen
         self.language = FastTextLanguageModel(language)
         self.dimensions = self.language['hello'].shape[0]
-        self.tokenizer = CountVectorizer().build_tokenizer()
+        self.analyzer = CountVectorizer(strip_accents='ascii', lowercase=True).build_analyzer()
 
     def fit(self, X, y=None, **kwargs):
         """
@@ -73,7 +73,7 @@ class FastTextVectorizer(BaseEstimator, TransformerMixin):
         buffer = np.zeros((len(strings), self.maxlen,
                            self.dimensions), dtype=np.float32)
         for i, string in enumerate(strings):
-            for j, word in enumerate(self.tokenizer(html.unescape(string))):
+            for j, word in enumerate(self.analyzer(html.unescape(string))):
                 if j >= self.maxlen:
                     break
                 else:
