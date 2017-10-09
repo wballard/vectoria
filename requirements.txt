@@ -1,8 +1,6 @@
-Cython==0.26
+Cython>=0.26
 tqdm>=4.15.0
 numpy>=1.13.1
 requests>=2.13.0
-lmdb==0.93
-numba>=0.34
-llvmlite>=0.19
-scikit-learn=0.18.1
+scikit-learn>=0.18.1
+mmh3

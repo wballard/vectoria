@@ -1,28 +1,13 @@
 """
-Setup for Vectoria. This uses cython, so will compile the C++ code of
-FastText into a python extension.
+Setup for Vectoria.
+
 """
 
 from sys import platform
-from Cython.Build import cythonize
 import numpy as np
 
 from setuptools import setup
 from setuptools.extension import Extension
-# Define the C++ extension
-if platform == "darwin":
-    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++0x', '-stdlib=libc++', '-mmacosx-version-min=10.7']
-else:
-    extra_compile_args = ['-O3', '-pthread', '-funroll-loops', '-std=c++0x']
-
-extensions = [
-    Extension('*',
-        sources=[
-            'vectoria/FastTextLanguageModel.pyx',
-        ],
-        language='c++',
-        extra_compile_args=extra_compile_args)
-]
 
 # Package details
 setup(
@@ -35,7 +20,6 @@ setup(
     long_description=open('README.md', 'r').read(),
     license='BSD 3-Clause License',
     packages=['vectoria'],
-    ext_modules = cythonize(extensions),
     include_dirs=['.', np.get_include()],
     install_requires=[
         'numpy>=1',

@@ -1,3 +1,7 @@
 README.rst
 build
 vectoria.egg-info
+.cache/
+__pycache__/
+vectoria/__pycache__/
+.

@@ -1,15 +1,19 @@
-'''
+"""
 Turns strings into sequences of ordinal integers, intended to be used
 with further embeddings.
 
 These follow the sklearn style, with no need to `fit`, just `transform`
 as hashing is used.
-'''
+>>> from vectoria import Sequencers
+>>> Sequencers.WordSequencer(maxlen=3).transform(['hello world'])
+array([[784967, 408827,      0]], dtype=int32)
+"""
 import html
 
 import numpy as np
-import pyhash
 from sklearn.feature_extraction.text import CountVectorizer
+
+import mmh3
 
 
 class HashingTransformMixin:
@@ -48,20 +52,21 @@ class HashingTransformMixin:
             strings = list(strings)
         buffer = np.zeros((len(strings), self.maxlen), dtype=np.int32)
         for i, string in enumerate(strings):
-            for j, word in enumerate(self.build_analyzer(html.unescape(string))):
+            for j, word in enumerate(self.build_analyzer()(html.unescape(string))):
                 if j >= self.maxlen:
                     break
                 else:
-                    buffer[i, j] = pyhash.murmur3_32(word) % self.features
+                    buffer[i, j] = abs(mmh3.hash(word) % self.features)
         return buffer
 
 
-class WordSequencer(CountVectorizer, HashingTransformMixin):
+class WordSequencer(HashingTransformMixin, CountVectorizer):
     """
     Treat text as a sequence of words.
 
     This differs from the classic bag-of-words model in that context of
     word ordering a preserved.
+
 
     Attributes
     ----------
@@ -83,7 +88,7 @@ class WordSequencer(CountVectorizer, HashingTransformMixin):
         self.features = 2 ** 20
 
 
-class CharacterTrigramSequencer(CountVectorizer):
+class CharacterTrigramSequencer(HashingTransformMixin, CountVectorizer):
     """
     Treat text as a sequence of character trigrams.
 

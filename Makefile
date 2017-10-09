@@ -1,9 +1,8 @@
 
 all: install test
 
-test: install-dev
-	python examples/fasttext_words.py
-
+test:
+	pytest --doctest-modules vectoria
 clean:
 	rm -rf build
 .PHONY: clean
