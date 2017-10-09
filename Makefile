@@ -33,7 +33,7 @@ install-from-pypitest::
 	pip install -U --no-cache-dir -i https://testpypi.python.org/pypi vectoria
 .PHONY: install-from-pypitest
 
-install-dev: README.rst
+install-dev:
 	python setup.py develop
 .PHONY: install-dev
 
