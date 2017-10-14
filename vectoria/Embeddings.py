@@ -1,6 +1,13 @@
 """
 Download and store pretrained models that can be used to create embedding
 layers.
+
+These models take pretrained files, downloaded over HTTP, and compile them
+into dense tensor representation using a memory mapping back end.
+
+>>> from vectoria import Embeddings
+>>> Embeddings.CharacterTrigramFastText(language='en').embeddings.shape
+(2519370, 300)
 """
 import importlib
 from pathlib import Path
@@ -12,7 +19,7 @@ import requests
 from tqdm import tqdm
 import numpy.linalg as la
 
-URL_TEMPLATE = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{0}.vec"
+FAST_TEXT_URL_TEMPLATE = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{0}.vec"
 
 GLOVE_URL_EN = "http://nlp.stanford.edu/data/glove.6B.zip"
 
@@ -58,7 +65,7 @@ class CharacterTrigramFastText:
         This is a memory mapped array to save some I/O.
     """
 
-    def __init__(self, language: str):
+    def __init__(self, language='en'):
         """
         Construct a language model for a given string by:
         - opening an existing model if present
@@ -73,11 +80,10 @@ class CharacterTrigramFastText:
             Two letter language code.
         """
         vectors_path = download_path('fasttext', language)
-        print(vectors_path)
         final_path = vectors_path.with_suffix('.numpy')
         # download if needed
         if not vectors_path.exists():
-            url = URL_TEMPLATE.format(language)
+            url = FAST_TEXT_URL_TEMPLATE.format(language)
             # Streaming, so we can iterate over the response.
             r = requests.get(url, stream=True)
             # Total size in bytes.
@@ -109,7 +115,6 @@ class CharacterTrigramFastText:
                     except ValueError:
                         pass
             embeddings.flush()
-            print(embeddings.sum())
             del embeddings
             final_path.with_suffix('.tmp').rename(final_path)
         # and -- actually open
@@ -118,4 +123,3 @@ class CharacterTrigramFastText:
             words, dimensions = map(int, first_line.split())
             self.embeddings = np.memmap(
                 final_path, dtype='float32', mode='r', shape=(words, dimensions))
-            print(self.embeddings.sum())
