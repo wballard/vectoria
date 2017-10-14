@@ -9,7 +9,15 @@ into dense tensor representation using a memory mapping back end.
 >>> chargram = Embeddings.CharacterTrigramFastText(language='en')
 >>> chargram.embeddings.shape
 (2519370, 300)
->>> chargram.embed('hello')
+>>> chargram.embed('hello')[0:4, 0:10]
+array([[-0.33853999, -0.15685   , -0.31086001,  0.41556999, -0.32370999,
+        -0.027012  ,  0.42827001, -0.15748   , -0.034061  ,  0.36767   ],
+       [-0.26877001, -0.32778999, -0.47106001,  0.55541003,  0.61224002,
+        -0.065267  , -0.41846001,  0.033309  ,  0.31174999,  0.56216002],
+       [ 0.2438    , -0.38519999, -0.22592001, -0.17658   , -0.36068001,
+         0.31208   ,  0.25608   ,  0.29251   , -0.22416   , -0.0011038 ],
+       [ 0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+         0.        ,  0.        ,  0.        ,  0.        ,  0.        ]], dtype=float32)
 """
 import importlib
 from pathlib import Path
@@ -104,7 +112,7 @@ class CharacterTrigramFastText:
                         progress.update(len(data))
             vectors_path.with_suffix('.tmp').rename(vectors_path)
         # compile if needed
-        if True or not final_path.exists():
+        if not final_path.exists():
             with open(vectors_path, 'r') as f:
                 first_line = f.readline()
                 words, dimensions = map(int, first_line.split())
@@ -120,6 +128,7 @@ class CharacterTrigramFastText:
                         embeddings[word] = numbers
                     except ValueError:
                         pass
+            # the zero word is a pad value
             embeddings[0] = np.zeros(dimensions)
             embeddings.flush()
             del embeddings
