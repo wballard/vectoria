@@ -7,6 +7,8 @@ as hashing is used.
 >>> from vectoria import Sequencers
 >>> Sequencers.WordSequencer(maxlen=3).transform(['hello world'])
 array([[784967, 408827,      0]], dtype=int32)
+>>> Sequencers.CharacterTrigramSequencer(maxlen=4).transform(['hello'])
+array([[ 12358, 130791,  85660,      0]], dtype=int32)
 """
 import html
 
@@ -109,6 +111,7 @@ class CharacterTrigramSequencer(HashingTransformMixin, CountVectorizer):
         maxlen : int
             Limit parsing to this number of words.
         """
-        super(WordSequencer, self).__init__(lowercase=True, ngram_range=(3, 3))
+        super(CharacterTrigramSequencer, self).__init__(
+            lowercase=True, ngram_range=(3, 3), analyzer='char')
         self.maxlen = maxlen
         self.features = (2**16) * 3  # 2 ** 16 for unicode, * 3 for trigram

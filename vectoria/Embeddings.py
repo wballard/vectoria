@@ -14,14 +14,17 @@ import numpy.linalg as la
 
 URL_TEMPLATE = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{0}.vec"
 
+GLOVE_URL_EN = "http://nlp.stanford.edu/data/glove.6B.zip"
+
 
 epsilon = np.finfo(np.float32).eps
+
 
 def download_path(flavor, language):
     """
     Compute a download path for a given flavor of vectors
     and language.
-    
+
     Parameters
     ----------
     flavor:
@@ -42,6 +45,7 @@ def download_path(flavor, language):
     vectors_path = folder_path / Path('{1}-{0}.vec'.format(flavor, language))
     return vectors_path
 
+
 class CharacterTrigramFastText:
     """
     Language model base that will download and compile pretrained FastText vectors
@@ -60,12 +64,16 @@ class CharacterTrigramFastText:
         - opening an existing model if present
         - downloading and compiling pretrained word models otherwise
 
+        This is a mulit-gigabyte download at least for english and will take
+        a while.
+
         Parameters
         ----------
         language:
             Two letter language code.
         """
         vectors_path = download_path('fasttext', language)
+        print(vectors_path)
         final_path = vectors_path.with_suffix('.numpy')
         # download if needed
         if not vectors_path.exists():
@@ -87,20 +95,27 @@ class CharacterTrigramFastText:
             with open(vectors_path, 'r') as f:
                 first_line = f.readline()
                 words, dimensions = map(int, first_line.split())
-                embeddings = np.memmap(final_path.with_suffix('.tmp'), dtype='float32', mode='w+', shape=(words,dimensions))
+                embeddings = np.memmap(final_path.with_suffix(
+                    '.tmp'), dtype='float32', mode='w+', shape=(words, dimensions))
             sequencer = Sequencers.CharacterTrigramSequencer()
             for line in tqdm(iterable=open(str(vectors_path)), total=words):
                 # how big is this thing?
                 segments = line.split()
-                if len(segments) > dimensions:
-                    word = sequencer(segments[0])[0]
-                    numbers = np.array(list(map(np.float32, segments[1:])))
-                    embeddings[word] = numbers
+                if len(segments) > dimensions and len(segments[0]) > 2:
+                    word = sequencer.transform([segments[0]])[0][0]
+                    try:
+                        numbers = np.array(list(map(np.float32, segments[1:])))
+                        embeddings[word] = numbers
+                    except ValueError:
+                        pass
+            embeddings.flush()
+            print(embeddings.sum())
             del embeddings
             final_path.with_suffix('.tmp').rename(final_path)
         # and -- actually open
         with open(vectors_path, 'r') as f:
             first_line = f.readline()
             words, dimensions = map(int, first_line.split())
-            self.embeddings = np.memmap(final_path, dtype='float32', mode='w+', shape=(words,dimensions))
-
+            self.embeddings = np.memmap(
+                final_path, dtype='float32', mode='r', shape=(words, dimensions))
+            print(self.embeddings.sum())

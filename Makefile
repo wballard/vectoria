@@ -1,6 +1,9 @@
 
 all: install test
 
+english:
+	python -c 'import vectoria; vectoria.CharacterTrigramFastText("en")'
+
 test:
 	pytest --doctest-modules vectoria
 clean:
