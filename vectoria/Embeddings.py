@@ -6,8 +6,10 @@ These models take pretrained files, downloaded over HTTP, and compile them
 into dense tensor representation using a memory mapping back end.
 
 >>> from vectoria import Embeddings
->>> Embeddings.CharacterTrigramFastText(language='en').embeddings.shape
+>>> chargram = Embeddings.CharacterTrigramFastText(language='en')
+>>> chargram.embeddings.shape
 (2519370, 300)
+>>> chargram.embed('hello')
 """
 import importlib
 from pathlib import Path
@@ -18,6 +20,7 @@ import numpy as np
 import requests
 from tqdm import tqdm
 import numpy.linalg as la
+import keras
 
 FAST_TEXT_URL_TEMPLATE = "https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.{0}.vec"
 
@@ -65,7 +68,7 @@ class CharacterTrigramFastText:
         This is a memory mapped array to save some I/O.
     """
 
-    def __init__(self, language='en'):
+    def __init__(self, language='en', maxlen=1024):
         """
         Construct a language model for a given string by:
         - opening an existing model if present
@@ -78,9 +81,13 @@ class CharacterTrigramFastText:
         ----------
         language:
             Two letter language code.
+        maxlen: 
+            Limit to this number of token parsed per document.
         """
         vectors_path = download_path('fasttext', language)
         final_path = vectors_path.with_suffix('.numpy')
+        self.maxlen = maxlen
+        self.sequencer = sequencer = Sequencers.CharacterTrigramSequencer(maxlen=maxlen)
         # download if needed
         if not vectors_path.exists():
             url = FAST_TEXT_URL_TEMPLATE.format(language)
@@ -97,13 +104,12 @@ class CharacterTrigramFastText:
                         progress.update(len(data))
             vectors_path.with_suffix('.tmp').rename(vectors_path)
         # compile if needed
-        if not final_path.exists():
+        if True or not final_path.exists():
             with open(vectors_path, 'r') as f:
                 first_line = f.readline()
                 words, dimensions = map(int, first_line.split())
                 embeddings = np.memmap(final_path.with_suffix(
                     '.tmp'), dtype='float32', mode='w+', shape=(words, dimensions))
-            sequencer = Sequencers.CharacterTrigramSequencer()
             for line in tqdm(iterable=open(str(vectors_path)), total=words):
                 # how big is this thing?
                 segments = line.split()
@@ -114,6 +120,7 @@ class CharacterTrigramFastText:
                         embeddings[word] = numbers
                     except ValueError:
                         pass
+            embeddings[0] = np.zeros(dimensions)
             embeddings.flush()
             del embeddings
             final_path.with_suffix('.tmp').rename(final_path)
@@ -123,3 +130,32 @@ class CharacterTrigramFastText:
             words, dimensions = map(int, first_line.split())
             self.embeddings = np.memmap(
                 final_path, dtype='float32', mode='r', shape=(words, dimensions))
+
+        self.model = keras.models.Sequential()
+        self.model.add(keras.layers.Embedding(
+            self.embeddings.shape[0],
+            self.embeddings.shape[1], 
+            mask_zero=True,
+            input_length=maxlen, 
+            trainable=False, 
+            weights=[self.embeddings]))
+
+    def embed(self, str):
+        """
+        Given a string, turn it into a sequence of chargram identifiers, and
+        then embed it.
+
+        Parameters
+        ----------
+        str:
+            Any string.
+
+        Returns
+        -------
+        A two dimensional embedding array.
+        """
+        input = keras.layers.Input(shape=(self.maxlen,))
+        embedded = self.model(input)
+        model = keras.models.Model(input=input, output=embedded)
+        model.compile(optimizer='adam', loss='mse')
+        return model.predict(self.sequencer.transform([str]))[0]
