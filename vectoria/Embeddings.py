@@ -90,7 +90,7 @@ class WordEmbedding:
     >>> word = Embeddings.WordEmbedding(language='en')
     >>> word.embeddings.shape
     (1048576, 300)
-    >>> word.embed('hello world')[0:4, 0:10]
+    >>> word.embed('hello world')[0][0:4, 0:10]
     array([[  9.57600027e-02,  -3.96219999e-01,  -1.89219993e-02,
               2.85719991e-01,   4.91470009e-01,   3.94629985e-02,
               1.67980000e-01,  -1.49849996e-01,   2.31999997e-02,
@@ -107,7 +107,6 @@ class WordEmbedding:
               0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
               0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
               0.00000000e+00]], dtype=float32)
-
     """
 
     def __init__(self, language='en', maxlen=1024):
@@ -131,7 +130,6 @@ class WordEmbedding:
         vectors_path = download_path('glove', language).with_suffix('.zip')
         final_path = vectors_path.with_suffix('.numpy')
         url = GLOVE_URL_EN
-        url = FAST_TEXT_URL_TEMPLATE.format(language)
         # glove known to have 300 dimensions
         dimensions = 300
         self.maxlen = maxlen
@@ -149,14 +147,13 @@ class WordEmbedding:
                     line = line.decode('utf8')
                     segments = line.split()
                     assert len(segments) == 301
-                    if len(segments) > dimensions:
-                        word = sequencer.transform([segments[0]])[0]
-                        try:
-                            numbers = np.array(
-                                list(map(np.float32, segments[1:])))
-                            embeddings[word] = numbers
-                        except ValueError:
-                            pass
+                    word = sequencer.transform([segments[0]])[0]
+                    try:
+                        numbers = np.array(
+                            list(map(np.float32, segments[1:])))
+                        embeddings[word] = numbers
+                    except ValueError:
+                        pass
             # the zero word is a pad value
             embeddings[0] = np.zeros(dimensions)
             embeddings.flush()
@@ -188,12 +185,12 @@ class WordEmbedding:
 
         Returns
         -------
-        A two dimensional embedding array.
+        A three tensor, (batch entry, word position, embeded value).
         """
         input = keras.layers.Input(shape=(self.maxlen,))
         embedded = self.model(input)
         model = keras.models.Model(input=input, output=embedded)
-        return model.predict(self.sequencer.transform(strings))[0]
+        return model.predict(self.sequencer.transform(strings))
 
 
 class CharacterTrigramEmbedding:
@@ -211,7 +208,7 @@ class CharacterTrigramEmbedding:
     >>> chargram = Embeddings.CharacterTrigramEmbedding(language='en')
     >>> chargram.embeddings.shape
     (196608, 300)
-    >>> chargram.embed('hello')[0:4, 0:10]
+    >>> chargram.embed('hello')[0][0:4, 0:10]
     array([[ -4.47659999e-01,  -3.63579988e-01,  -3.11529994e-01,
               2.96270013e-01,   2.28880003e-01,  -1.85499996e-01,
              -8.03470016e-02,  -3.20030004e-02,  -8.14009979e-02,
@@ -308,4 +305,4 @@ class CharacterTrigramEmbedding:
         input = keras.layers.Input(shape=(self.maxlen,))
         embedded = self.model(input)
         model = keras.models.Model(input=input, output=embedded)
-        return model.predict(self.sequencer.transform(strings))[0]
+        return model.predict(self.sequencer.transform(strings))
