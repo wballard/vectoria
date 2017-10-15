@@ -2,7 +2,8 @@
 all: install test
 
 english:
-	python -c 'import vectoria; vectoria.CharacterTrigramFastText("en")'
+	python -c 'import vectoria; vectoria.CharacterTrigramEmbedding("en")'
+	python -c 'import vectoria; vectoria.WordEmbedding("en")'
 
 test:
 	pytest --doctest-modules vectoria

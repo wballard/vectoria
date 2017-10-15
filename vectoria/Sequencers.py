@@ -4,11 +4,6 @@ with further embeddings.
 
 These follow the sklearn style, with no need to `fit`, just `transform`
 as hashing is used.
->>> from vectoria import Sequencers
->>> Sequencers.WordSequencer(maxlen=3).transform(['hello world'])
-array([[784967, 408827,      0]], dtype=int32)
->>> Sequencers.CharacterTrigramSequencer(maxlen=4).transform(['hello'])
-array([[ 12358, 130791,  85660,      0]], dtype=int32)
 """
 import html
 
@@ -74,6 +69,10 @@ class WordSequencer(HashingTransformMixin, CountVectorizer):
     ----------
     maxlen : Limit to this number of words parsed per document.
     features: Total number of unique features, which may allow collisions.
+
+    >>> from vectoria import Sequencers
+    >>> Sequencers.WordSequencer(maxlen=3).transform(['hello world'])
+    array([[784967, 408827,      0]], dtype=int32)
     """
 
     def __init__(self, maxlen=1024):
@@ -100,6 +99,11 @@ class CharacterTrigramSequencer(HashingTransformMixin, CountVectorizer):
     Attributes
     ----------
     maxlen : Limit to this number of chargrams parsed per document.
+    features: Total number of unique features, which may allow collisions.
+
+    >>> from vectoria import Sequencers
+    >>> Sequencers.CharacterTrigramSequencer(maxlen=4).transform(['hello'])
+    array([[ 12358, 130791,  85660,      0]], dtype=int32)
     """
 
     def __init__(self, maxlen=1024):
