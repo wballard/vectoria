@@ -189,7 +189,7 @@ class WordEmbedding:
         """
         input = keras.layers.Input(shape=(self.maxlen,))
         embedded = self.model(input)
-        model = keras.models.Model(input=input, output=embedded)
+        model = keras.models.Model(inputs=input, outputs=embedded)
         return model.predict(self.sequencer.transform(strings))
 
 
@@ -300,9 +300,9 @@ class CharacterTrigramEmbedding:
 
         Returns
         -------
-        A two dimensional embedding array.
+        A three tensor, (batch entry, word position, embeded value).
         """
         input = keras.layers.Input(shape=(self.maxlen,))
         embedded = self.model(input)
-        model = keras.models.Model(input=input, output=embedded)
+        model = keras.models.Model(inputs=input, outputs=embedded)
         return model.predict(self.sequencer.transform(strings))

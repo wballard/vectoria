@@ -4,4 +4,5 @@ vectoria.egg-info
 .cache/
 __pycache__/
 vectoria/__pycache__/
+vectoria/en
 .

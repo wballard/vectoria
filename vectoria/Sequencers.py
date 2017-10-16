@@ -98,8 +98,10 @@ class CharacterTrigramSequencer(HashingTransformMixin, CountVectorizer):
 
     Attributes
     ----------
-    maxlen : Limit to this number of chargrams parsed per document.
-    features: Total number of unique features, which may allow collisions.
+    maxlen:
+        Limit to this number of chargrams parsed per document.
+    features: 
+        Total number of unique features, which may allow collisions.
 
     >>> from vectoria import Sequencers
     >>> Sequencers.CharacterTrigramSequencer(maxlen=4).transform(['hello'])
@@ -108,7 +110,7 @@ class CharacterTrigramSequencer(HashingTransformMixin, CountVectorizer):
 
     def __init__(self, maxlen=1024):
         """
-        Load up and prepare the language model to transform words.
+        Configure word analysis for character trigrams.
 
         Parameters
         ----------
@@ -119,3 +121,74 @@ class CharacterTrigramSequencer(HashingTransformMixin, CountVectorizer):
             lowercase=True, ngram_range=(3, 3), analyzer='char')
         self.maxlen = maxlen
         self.features = (2**16) * 3  # 2 ** 16 for unicode, * 3 for trigram
+
+
+class SubwordSequencer(CharacterTrigramSequencer):
+    """
+    To support FastText type encodings, treat text as a series of words,
+    and then break those words into character ngram subwords.
+
+    Attributes
+    ----------
+    maxwords:
+        Limit to this number of words.
+    maxngrams:
+        For each word limit to this number of ngrams.
+    features:
+        Total number of unique features, which may allow collisions.
+    wordbreaker:
+        Split an initial string into words.
+
+    >>> from vectoria import Sequencers
+    >>> Sequencers.SubwordSequencer(maxwords=4, maxngrams=6).transform(['hello world'])
+    array([[[ 12358, 130791,  85660,      0,      0,      0],
+            [156642, 179925, 179940,      0,      0,      0],
+            [     0,      0,      0,      0,      0,      0],
+            [     0,      0,      0,      0,      0,      0]]], dtype=int32)
+    """
+
+    def __init__(self, maxwords=1024, maxngrams=32):
+        """
+        Configure word analysis for character trigrams.
+
+        Parameters
+        ----------
+        maxlen : int
+            Limit parsing to this number of words.
+        maxngrams:
+            For each word limit to this number of ngrams.
+        """
+        super(SubwordSequencer, self).__init__(maxngrams)
+        self.maxngrams = maxngrams
+        self.maxwords = maxwords
+        self.wordbreaker = CountVectorizer(lowercase=True).build_analyzer()
+
+    def transform(self, strings):
+        """
+        Given a string, or iterable source of strings, break into words,
+        then subwords by character ngram. Each word is thus represented by multiple
+        identifiers.
+
+        Parameters
+        ----------
+        strings : iterable
+            An iterable of source strings to vectorize.
+
+        Returns
+        -------
+        np.ndarray
+            A 3 tensor [string_index, word_index, subword_index], with a 32 bit word identifier.
+        """
+        if isinstance(strings, str):
+            # forgive, otherwise this is just going character wise
+            strings = [strings]
+        else:
+            # buffering up the iterable source
+            strings = list(strings)
+        buffer = np.zeros((len(strings), self.maxwords,
+                           self.maxngrams), dtype=np.int32)
+        ngram_maker = super(SubwordSequencer, self).transform
+        for i, string in enumerate(strings):
+            ngrams = ngram_maker(self.wordbreaker(string))
+            buffer[i, :ngrams.shape[0]] = ngrams
+        return buffer
