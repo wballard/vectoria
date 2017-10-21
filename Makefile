@@ -20,12 +20,8 @@ install:
 	python setup.py install
 .PHONY: install
 
-# Install the pandoc(1) first to run this command
-# sudo apt-get install pandoc
-README.rst: README.md
-	pandoc --from=markdown --to=rst --output=README.rst README.md
 
-upload: README.rst
+upload: 
 	python setup.py sdist upload
 
 upload-to-pypitest: README.rst
@@ -41,7 +37,3 @@ install-dev:
 .PHONY: install-dev
 
 
-profile: install-dev
-	kernprof -l examples/sklearn_profile.py
-	python -m line_profiler sklearn_profile.py.lprof 
-.PHONY: profile
