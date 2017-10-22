@@ -4,9 +4,8 @@ Setup for Vectoria.
 """
 
 from sys import platform
-import numpy as np
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.extension import Extension
 
 # Package details
@@ -19,24 +18,21 @@ setup(
     description='Word Vector Encoder',
     long_description=open('README.md', 'r').read(),
     license='BSD 3-Clause License',
-    packages=['vectoria'],
-    include_dirs=['.', np.get_include()],
+    packages=find_packages(),
     install_requires=[
-        'numpy>=1',
-        'future'
+        'requests>=2.13.0'
+        'keras>=2.0.8',
+        'tensorflow>=1.3.0',
+        'numpy>=1.13.1',
+        'tqdm',
+        'mmh3',
+        'scikit-learn>=0.18.1'
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: C++',
-        'Programming Language :: Cython',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Topic :: Scientific/Engineering :: Artificial Intelligence'

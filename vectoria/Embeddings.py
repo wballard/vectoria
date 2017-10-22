@@ -113,7 +113,6 @@ class Embedding:
         model.add(keras.layers.Embedding(
             self.embeddings.shape[0],
             self.embeddings.shape[1],
-            mask_zero=True,
             input_length=self.maxlen,
             trainable=False,
             embeddings_initializer=lambda shape: self.embeddings)
