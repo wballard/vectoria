@@ -115,7 +115,7 @@ class Embedding:
             self.embeddings.shape[1],
             input_length=self.maxlen,
             trainable=False,
-            embeddings_initializer=lambda shape: self.embeddings)
+            weights=[self.embeddings])
         )
         return model
 

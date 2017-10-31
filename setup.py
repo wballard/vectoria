@@ -22,7 +22,7 @@ setup(
     install_requires=[
         'requests>=2.13.0'
         'keras>=2.0.8',
-        'tensorflow>=1.3.0',
+        'tensorflow-gpu>=1.3.0',
         'numpy>=1.13.1',
         'tqdm',
         'mmh3',
