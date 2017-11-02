@@ -15,8 +15,7 @@ setup(
     author='Will Ballard',
     author_email='wballard@mailframe.net',
     url='https://github.com/wballard/vectoria',
-    description='Word Vector Encoder',
-    long_description=open('README.md', 'r').read(),
+    description='Vectoria A Word Vector Encoder, used to turn word strings into dense numerical embeddings for machine learning models.',
     license='BSD 3-Clause License',
     packages=find_packages(),
     install_requires=[
