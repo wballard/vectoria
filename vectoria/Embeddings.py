@@ -100,7 +100,7 @@ class Embedding:
         A three tensor, (batch entry, word position, embeded value).
         """
         input = keras.layers.Input(shape=(self.maxlen,))
-        embedded = self.model(input)
+        embedded = self.build_model()(input)
         model = keras.models.Model(inputs=input, outputs=embedded)
         return model.predict(self.sequencer.transform(strings))
 
@@ -196,7 +196,6 @@ class WordEmbedding(Embedding):
         # and -- actually open
         self.embeddings = np.memmap(
             final_path, dtype='float32', mode='r', shape=(sequencer.features, dimensions))
-        self.model = self.build_model()
 
 
 class CharacterTrigramEmbedding(Embedding):
@@ -278,7 +277,6 @@ class CharacterTrigramEmbedding(Embedding):
             words, dimensions = map(int, first_line.split())
             self.embeddings = np.memmap(
                 final_path, dtype='float32', mode='r', shape=(sequencer.features, dimensions))
-        self.model = self.build_model()
 
 
 class FastTextEmbedding(CharacterTrigramEmbedding):
@@ -336,7 +334,7 @@ class FastTextEmbedding(CharacterTrigramEmbedding):
         A three tensor, (batch entry, word position, embeded value).
         """
         input = keras.layers.Input(shape=(self.maxwords, self.maxngrams))
-        embedded = self.model(input)
+        embedded = self.build_model()(input)
         model = keras.models.Model(inputs=input, outputs=embedded)
         return model.predict(self.sequencer.transform(strings))
 
