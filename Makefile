@@ -1,6 +1,6 @@
 
 
-test: install-dev
+test: 
 	pytest --doctest-modules vectoria
 .PHONY: test
 
