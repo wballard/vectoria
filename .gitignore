@@ -5,4 +5,4 @@ vectoria.egg-info
 __pycache__/
 vectoria/__pycache__/
 vectoria/en
-.
+dist/
