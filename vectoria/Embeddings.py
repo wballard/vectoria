@@ -67,7 +67,7 @@ def download_if_needed(url, path):
         r = requests.get(url, stream=True)
         # Total size in bytes.
         total_size = int(r.headers.get('content-length', 0))
-        with open(path.with_suffix('.tmp'), 'wb') as f:
+        with open(path.with_suffix('.tmp'), mode='wb') as f:
             chunk = 32 * 1024
             progress = tqdm(total=total_size, unit='B', unit_scale=True)
             for data in r.iter_content(chunk):
@@ -173,7 +173,7 @@ class WordEmbedding(Embedding):
         if not final_path.exists():
             with zipfile.ZipFile(vectors_path.as_posix()) as archive:
                 words = 0
-                for line in tqdm(archive.open('glove.6B.300d.txt'), desc='Counting', unit='vector'):
+                for line in tqdm(archive.open('glove.6B.300d.txt', mode='r', encoding='utf8'), desc='Counting', unit='vector'):
                     words = words + 1
                 embeddings = np.memmap(final_path.with_suffix(
                     '.tmp'), dtype='float32', mode='w+', shape=(sequencer.features, dimensions))

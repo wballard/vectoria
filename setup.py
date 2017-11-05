@@ -11,7 +11,7 @@ from setuptools.extension import Extension
 # Package details
 setup(
     name='vectoria',
-    version='0.0.3',
+    version='0.0.4',
     author='Will Ballard',
     author_email='wballard@mailframe.net',
     url='https://github.com/wballard/vectoria',
@@ -28,7 +28,6 @@ setup(
         'scikit-learn>=0.18.1'
     ],
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
