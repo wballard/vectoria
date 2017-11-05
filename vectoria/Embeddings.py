@@ -173,7 +173,7 @@ class WordEmbedding(Embedding):
         if not final_path.exists():
             with zipfile.ZipFile(vectors_path.as_posix()) as archive:
                 words = 0
-                for line in tqdm(archive.open('glove.6B.300d.txt', mode='r', encoding='utf8'), desc='Counting', unit='vector'):
+                for line in tqdm(archive.open('glove.6B.300d.txt'), desc='Counting', unit='vector'):
                     words = words + 1
                 embeddings = np.memmap(final_path.with_suffix(
                     '.tmp'), dtype='float32', mode='w+', shape=(sequencer.features, dimensions))
@@ -251,12 +251,12 @@ class CharacterTrigramEmbedding(Embedding):
         download_if_needed(url, vectors_path)
         # compile if needed, mapping from each trigram available
         if not final_path.exists():
-            with open(vectors_path, 'r') as f:
+            with open(vectors_path, mode='r', encoding='utf8') as f:
                 first_line = f.readline()
                 words, dimensions = map(int, first_line.split())
                 embeddings = np.memmap(final_path.with_suffix(
                     '.tmp'), dtype='float32', mode='w+', shape=(sequencer.features, dimensions))
-            for line in tqdm(iterable=open(str(vectors_path)), total=words, desc='Parsing', unit='vector'):
+            for line in tqdm(iterable=open(str(vectors_path), mode='r', encoding='utf8'), total=words, desc='Parsing', unit='vector'):
                 # how big is this thing? We are only interested in trigrams
                 segments = line.split()
                 if len(segments) > dimensions and len(segments[0]) == 3:
@@ -272,7 +272,7 @@ class CharacterTrigramEmbedding(Embedding):
             del embeddings
             final_path.with_suffix('.tmp').rename(final_path)
         # and -- actually open
-        with open(vectors_path, 'r') as f:
+        with open(vectors_path, mode='r', encoding='utf8') as f:
             first_line = f.readline()
             words, dimensions = map(int, first_line.split())
             self.embeddings = np.memmap(

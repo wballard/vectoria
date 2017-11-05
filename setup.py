@@ -11,7 +11,7 @@ from setuptools.extension import Extension
 # Package details
 setup(
     name='vectoria',
-    version='0.0.4',
+    version='0.0.5',
     author='Will Ballard',
     author_email='wballard@mailframe.net',
     url='https://github.com/wballard/vectoria',
